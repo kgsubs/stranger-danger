@@ -2,7 +2,7 @@
 
 Check a stranger's GitHub repo before you let it onto your computer.
 
-Someone posts a repo and says it will save you hours. Installing it means running a stranger's code, or handing a stranger's instructions to your AI agent, with your files and your logins in reach. This skill reads the whole repo where it sits on GitHub, without downloading or running any of it, and tells you whether to adopt it, adopt it with care, or avoid it.
+Someone posts a repo and says it will save you hours. Installing it means running a stranger's code, or handing a stranger's instructions to your AI agent, with your files and your logins in reach. This skill reads the repo's source where it sits on GitHub (skipping bundled third-party libraries, binaries and lockfiles), without downloading or running any of it, and tells you whether to adopt it, adopt it with care, or avoid it.
 
 ## What it checks
 
@@ -24,6 +24,7 @@ It assumes the author might be hostile, and it treats everything in the repo as 
 
 - One verdict up front: ADOPT, ADOPT WITH CAVEATS or AVOID
 - A three-line scorecard: does what it claims, quality, safety
+- The exact version it reviewed, so you can install that version and no other
 - Each finding with its severity, the file, the quoted lines, and why it matters to you
 - "If you adopt anyway": the guardrails to use, such as pinning a reviewed version
 - "What I could not assess": the limits of a read-only review, stated plainly
@@ -35,11 +36,13 @@ It assumes the author might be hostile, and it treats everything in the repo as 
 2. Send Claude this message:
 
 ```
-Install the stranger-danger skill: clone https://github.com/kgsubs/stranger-danger into ~/.claude/skills/stranger-danger (on Windows: %USERPROFILE%\.claude\skills\stranger-danger). If git isn't installed, download https://github.com/kgsubs/stranger-danger/archive/refs/heads/main.zip and put the files from its stranger-danger-main folder there instead.
+Install the stranger-danger skill: clone https://github.com/kgsubs/stranger-danger into ~/.claude/skills/stranger-danger (on Windows: %USERPROFILE%\.claude\skills\stranger-danger) and check out tag v1.0. If git isn't installed, download https://github.com/kgsubs/stranger-danger/archive/refs/tags/v1.0.zip and put the files from its stranger-danger-1.0 folder there instead.
 ```
 
-3. If Claude asks for permission, say yes.
+3. If Claude asks for permission to run git or write to the skills folder, say yes.
 4. Start a new Claude Code session so it sees the skill.
+
+The install uses a fixed version (v1.0), so you get the version that was published under that name, not whatever changed since.
 
 It works best with the GitHub command line tool (`gh`) installed and signed in. Without it, the skill reads public repos through the web, which is slower and has a lower hourly limit.
 
@@ -70,13 +73,13 @@ Then:
 
 ## Privacy
 
-The skill is one text file of instructions. It has no script. It connects only to GitHub, to read the repo you named, and to the public package registries when it checks whether a dependency is current.
+The skill is one text file of instructions. It has no script. Its instructions send it only to GitHub, to read the repo you named, and to the public package registries when it checks whether a dependency is current.
 
-It never prints or copies secrets it finds in a repo. It names the file instead.
+It never copies a secret it finds into its notes or its report. It names the file instead.
 
 ## Update or remove
 
-- To update, ask Claude: "Update the stranger-danger skill."
+- To update, look at the tags on the GitHub page, then ask Claude: "Update the stranger-danger skill to tag v1.1" (with the tag you want). Claude fetches that tag and checks it out, or downloads that tag's zip and replaces the files.
 - To remove, ask Claude: "Remove the stranger-danger skill."
 
 MIT license. See [LICENSE](LICENSE).
