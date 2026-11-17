@@ -36,13 +36,13 @@ It assumes the author might be hostile, and it treats everything in the repo as 
 2. Send Claude this message:
 
 ```
-Install the stranger-danger skill: clone https://github.com/kgsubs/stranger-danger into ~/.claude/skills/stranger-danger (on Windows: %USERPROFILE%\.claude\skills\stranger-danger) and check out tag v1.0. If git isn't installed, download https://github.com/kgsubs/stranger-danger/archive/refs/tags/v1.0.zip and put the files from its stranger-danger-1.0 folder there instead.
+Install the stranger-danger skill: clone https://github.com/kgsubs/stranger-danger into ~/.claude/skills/stranger-danger (on Windows: %USERPROFILE%\.claude\skills\stranger-danger) and check out tag v1.1. If git isn't installed, download https://github.com/kgsubs/stranger-danger/archive/refs/tags/v1.1.zip and put the files from its stranger-danger-1.1 folder there instead.
 ```
 
 3. If Claude asks for permission to run git or write to the skills folder, say yes.
 4. Start a new Claude Code session so it sees the skill.
 
-The install uses a fixed version (v1.0), so you get the version that was published under that name, not whatever changed since.
+The install uses a fixed version (v1.1), so you get the version that was published under that name, not whatever changed since.
 
 It works best with the GitHub command line tool (`gh`) installed and signed in. Without it, the skill reads public repos through the web, which is slower and has a lower hourly limit.
 
@@ -79,7 +79,7 @@ It never copies a secret it finds into its notes or its report. It names the fil
 
 ## Update or remove
 
-- To update, look at the tags on the GitHub page, then ask Claude: "Update the stranger-danger skill to tag v1.1" (with the tag you want). Claude fetches that tag and checks it out, or downloads that tag's zip and replaces the files.
+- To update, look at the tags on the GitHub page, then ask Claude: "Update the stranger-danger skill to tag v1.2" (with the tag you want). Claude fetches that tag and checks it out, or downloads that tag's zip and replaces the files.
 - To remove, ask Claude: "Remove the stranger-danger skill."
 
 MIT license. See [LICENSE](LICENSE).
