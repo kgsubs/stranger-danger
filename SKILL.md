@@ -29,7 +29,7 @@ Never clone. Never `git clone`, `pip install`, `npm install`, `curl | bash`, or 
 
 Pulling contents into context is fine. Writing your own analysis notes to the findings file is fine. Writing the target's source to disk is NOT. If a tool would download or execute repo content, do not call it. `gh repo clone`, `gh release download`, `gh run download` and `gh api` with any write method are in that class.
 
-Findings file: `$HOME/.cache/stranger-danger-<owner>-<repo>.md` (never /tmp, guard-blocked on some hosts; never a path containing `/` from the repo name). Overwrite at start. Append every finding the moment it is found (severity, file, path, quoted snippet, problem, why it matters). Never hold findings only in context; long runs get compacted. Never quote secret values; refer by path.
+Findings file: `$HOME/.cache/stranger-danger-<owner>-<repo>.md` (never /tmp, guard-blocked on some hosts; never a path containing `/` from the repo name). Overwrite at start. Append every finding the moment it is found (severity, file, path, quoted snippet, finding, impact). Never hold findings only in context; long runs get compacted. Never quote secret values; refer by path.
 
 Severity (never inflate):
 - CRITICAL: confirmed malicious behavior, credential/data exfiltration, RCE on the user installing/running it, or a claim that is outright false in a way that breaks the core use case.
@@ -140,15 +140,18 @@ CRITICAL: N  HIGH: N  MEDIUM: N  LOW: N   (post-verification; note how many cand
 ## Findings
 ### [SEVERITY] Title
 1. **Where:** `path` (+ line/section)
-2. **Problem:** <description; quote the snippet>
-3. **Why it matters:** <impact if adopted>
-4. **Intentional?:** yes / no / unclear   (safety findings only)
+2. **Finding:** <what is there, stated as a fact; quote the snippet>
+3. **Impact:** <what it means for someone who adopts the repo>
+4. **Suggestion, if this concerns you:** <one option the reader could take; an offer, never an order>
+5. **Intentional?:** yes / no / unclear   (safety findings only)
 
-## If you adopt anyway
-<concrete guardrails: pin a commit, vendor it, sandbox the install, strip the postinstall hook, etc. Omit if verdict is clean.>
+## If you adopt and want extra care
+<options, each phrased as something the reader could do: pinning a commit, vendoring it, sandboxing the install, removing the postinstall hook, etc. Omit if verdict is clean.>
 
 ## What I could not assess
 <anything blocked by read-only/no-execute: runtime behavior, actual test pass/fail, dynamic payloads, and whether any published binary/release matches this source. Be explicit so the user knows the limits.>
 ```
 
-Do not write a fix prompt and do not modify anything - this is a go/no-go on someone else's code, not a repair job.
+**Inform, never direct.** The report tells the reader what is there and what it means; the decision is theirs. Every finding is three things in this order: the finding, its impact, and a suggestion offered only for a reader who is concerned. Write suggestions as options ("you could pin the install to this commit"), never as orders ("pin it", "never run this", "do not use", "must", "should"). State impact as what happens, not as a warning to obey. The verdict line is a summary of the findings, not an instruction.
+
+Do not write a fix prompt and do not modify anything - this is a read on someone else's code, not a repair job.

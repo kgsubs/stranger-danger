@@ -26,8 +26,8 @@ It assumes the author might be hostile, and it treats everything in the repo as 
 - A three-line scorecard: does what it claims, quality, safety
 - The exact version it reviewed, so you can install that version and no other
 - Repo facts, not held against the repo: one author, few stars, no tests, ready-made downloads and other things most public repos share, each with a brief line on why it is normal or not
-- Each finding with its severity, the file, the quoted lines, and why it matters to you
-- "If you adopt anyway": the guardrails to use, such as pinning a reviewed version
+- Each finding as three things: what was found (with the file and the quoted lines), its impact, and a suggestion if it concerns you. It informs; it does not tell you what to do.
+- "If you adopt and want extra care": options you could take, such as pinning the reviewed version
 - "What I could not assess": the limits of a read-only review, stated plainly
 - Only findings that were checked a second time against the file. The rest are dropped.
 
@@ -37,13 +37,13 @@ It assumes the author might be hostile, and it treats everything in the repo as 
 2. Send Claude this message:
 
 ```
-Install the stranger-danger skill: clone https://github.com/kgsubs/stranger-danger into ~/.claude/skills/stranger-danger (on Windows: %USERPROFILE%\.claude\skills\stranger-danger) and check out tag v1.3. If git isn't installed, download https://github.com/kgsubs/stranger-danger/archive/refs/tags/v1.3.zip and put the files from its stranger-danger-1.3 folder there instead.
+Install the stranger-danger skill: clone https://github.com/kgsubs/stranger-danger into ~/.claude/skills/stranger-danger (on Windows: %USERPROFILE%\.claude\skills\stranger-danger) and check out tag v1.4. If git isn't installed, download https://github.com/kgsubs/stranger-danger/archive/refs/tags/v1.4.zip and put the files from its stranger-danger-1.4 folder there instead.
 ```
 
 3. If Claude asks for permission to run git or write to the skills folder, say yes.
 4. Start a new Claude Code session so it sees the skill.
 
-The install uses a fixed version (v1.3), so you get the version that was published under that name, not whatever changed since.
+The install uses a fixed version (v1.4), so you get the version that was published under that name, not whatever changed since.
 
 It works best with the GitHub command line tool (`gh`) installed and signed in. Without it, the skill reads public repos through the web, which is slower and has a lower hourly limit.
 
@@ -80,7 +80,7 @@ It never copies a secret it finds into its notes or its report. It names the fil
 
 ## Update or remove
 
-- To update, look at the tags on the GitHub page, then ask Claude: "Update the stranger-danger skill to tag v1.4" (with the tag you want). Claude fetches that tag and checks it out, or downloads that tag's zip and replaces the files.
+- To update, look at the tags on the GitHub page, then ask Claude: "Update the stranger-danger skill to tag v1.5" (with the tag you want). Claude fetches that tag and checks it out, or downloads that tag's zip and replaces the files.
 - To remove, ask Claude: "Remove the stranger-danger skill."
 
 MIT license. See [LICENSE](LICENSE).
