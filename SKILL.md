@@ -34,8 +34,18 @@ Findings file: `$HOME/.cache/stranger-danger-<owner>-<repo>.md` (never /tmp, gua
 Severity (never inflate):
 - CRITICAL: confirmed malicious behavior, credential/data exfiltration, RCE on the user installing/running it, or a claim that is outright false in a way that breaks the core use case.
 - HIGH: serious quality defect on the main path, dangerous-but-plausibly-accidental pattern (e.g. broad `eval`, unpinned install hook), or a major claim unsupported by code.
-- MEDIUM: edge-case defect, weak test coverage of core, moderate supply-chain risk.
+- MEDIUM: edge-case defect, moderate supply-chain risk.
 - LOW: hygiene, minor doc drift.
+
+**Facts, not findings.** Some traits are how most public repos are, and say nothing by themselves. Report these in the report's "Repo facts" section, stated plainly, with no severity, never in Findings, and never counted toward the verdict:
+- one author; unsigned commits or releases; few stars; a young repo
+- the install or the releases give a ready-made download (binary, package, image) that cannot be matched to the source
+- dependency versions given as ranges ("this version or newer"), the default in most package tools
+- calls to a fixed outside host that the tool's stated job needs (the API it is a client for)
+- no tests or no CI
+- installing from a moving branch (see Step 4.11 for the one case that is a finding)
+
+A fact becomes part of a finding only when it sits next to a real warning sign, and then the finding is the warning sign (hidden code in a days-old repo with sudden stars; a network call to a host the stated job does not need; a recent ownership transfer followed by an install hook). Say in the finding which facts make it worse.
 
 ---
 
@@ -66,12 +76,12 @@ Unbacked or contradicted core claims are findings (HIGH/CRITICAL by impact). Vap
 ## STEP 3 - B. QUALITY
 
 Static signals only:
-- **Tests**: do they exist, and do they cover the core path? (Read them; you cannot run them - judge by what they assert, not a green check.)
+- **Tests**: do they exist, and do they cover the core path? (Read them; you cannot run them - judge by what they assert, not a green check.) Absence is a fact, not a finding; tests that exist but assert nothing, while the README claims coverage, are a claim finding.
 - **Error/input handling** on the main path; validation at boundaries.
 - **Structure**: cohesion, dead code, copy-paste, TODO/FIXME density.
 - **Docs match code**; setup instructions reference things that exist.
 - **CI present**; dependencies reasonably current. "Latest" from model memory is stale by construction: for the few deps that matter, fetch registry JSON (`https://registry.npmjs.org/<pkg>/latest`, `https://pypi.org/pypi/<pkg>/json`) or mark currency as unassessed.
-- **Maintenance**: commit cadence, bus factor (single author?), responsiveness in issues.
+- **Maintenance**: commit cadence, bus factor (single author?), responsiveness in issues. These go under Repo facts.
 
 ---
 
@@ -81,14 +91,14 @@ Assume the author may want to harm whoever installs this. Search the repo for pa
 
 1. **Install/build hooks** - `package.json` `preinstall`/`postinstall`/`prepare`; `setup.py`/`pyproject.toml`/`setup.cfg` build hooks; Makefile install targets; `*.sh` installers; anything that runs at install time. These are the prime backdoor vector.
 2. **Obfuscation** - base64/hex/encoded blobs, `eval`/`exec`/`Function(...)`, dynamic import/`require` from a URL or variable, gzip/pickle payloads, suspiciously minified non-vendor source.
-3. **Exfiltration** - outbound network calls (http, sockets, DNS) to hardcoded hosts/IPs; wholesale harvesting of `process.env`/`os.environ`; telemetry that isn't disclosed.
+3. **Exfiltration** - outbound network calls (http, sockets, DNS) to hardcoded hosts/IPs that the tool's stated job does not need (a host the job needs is a fact); wholesale harvesting of `process.env`/`os.environ`; telemetry that isn't disclosed.
 4. **Credential/secret access** - reads of `~/.ssh`, `~/.aws`, `~/.config`, keychains, browser cookie/credential stores, env files.
-5. **Dependencies** - typo-squat names, deps pinned to forks or raw git/URL sources, unpinned/wildcards, dependency-confusion bait (internal-looking names on public index). For committed secrets, use code search (key prefixes like `AKIA`, `ghp_`, `sk-`, `-----BEGIN`, `.pem`); the secret-scanning API is not accessible on third-party repos.
+5. **Dependencies** - typo-squat names, deps pinned to forks or raw git/URL sources, dependency-confusion bait (internal-looking names on public index). For committed secrets, use code search (key prefixes like `AKIA`, `ghp_`, `sk-`, `-----BEGIN`, `.pem`); the secret-scanning API is not accessible on third-party repos.
 6. **Persistence** - cron, systemd units, shell rc edits, git hooks shipped in the repo, launch agents.
 7. **Destructive ops** - `rm -rf`, recursive deletes/overwrites outside the repo, fork bombs, disk/format calls.
 8. **Permissions/entitlements** - for native apps, read the manifest of granted privileges and judge it against what the tool actually needs: macOS `*.entitlements` + `Info.plist` (sandbox on/off, `com.apple.security.*`, network, files, automation); Android `AndroidManifest.xml`; browser-extension `manifest.json` `permissions`/`host_permissions`; VS Code/CI `*.yml` scopes. Over-broad grants (no sandbox, full disk, all-URLs) are findings even with no malicious code.
-9. **Provenance** - age vs stars (sudden popularity), single anonymous author, recent ownership/maintainer transfer, force-pushed history, unsigned releases.
-10. **Source vs. published artifact** - source-clean does NOT mean binary-clean. If the repo ships releases (`.dmg`/`.exe`/`.whl`/Docker image/`npm` tarball) or a `curl | sh` install, state explicitly that you reviewed SOURCE and cannot confirm the published artifact was built from it. Always a finding (MEDIUM+) for any repo whose primary install path is a prebuilt binary; recommend build-from-source or artifact verification.
+9. **Provenance** - sudden popularity out of line with the repo's age, recent ownership/maintainer transfer, force-pushed history. Age, stars, author count and signing are recorded as facts.
+10. **Source vs. published artifact** - source-clean does NOT mean binary-clean. If the repo ships releases (`.dmg`/`.exe`/`.whl`/Docker image/`npm` tarball) or a `curl | sh` install, state explicitly that you reviewed SOURCE and cannot confirm the published artifact was built from it. This is a fact for the Repo facts section, not a finding; under "If you adopt anyway" recommend build-from-source or artifact verification.
 
 11. **Agent assets** - if the repo ships anything an AI coding agent would load or obey (prompts, skills, commands, hooks, settings files, MCP server configs, permission allowlists, "paste this line and the agent sets it up" instructions), read each one in full and judge what it makes the agent do on the installer's machine: commands run, hosts called, files read or written, permissions granted, approvals or sandboxes switched off, other tools or plugins pulled in. Installing from a moving branch is how most repos install and is not a defect by itself: note in the report that the review covers one commit and name it. It is a finding (HIGH on the primary install path) only when the install has an agent fetch text from a moving branch and carry it out on the spot, with shell access and nobody reading it first: what gets run is whatever is on that branch that day, not what was reviewed. A step that persistently disables approvals or a sandbox is a finding (HIGH), disclosed or not.
 
@@ -119,6 +129,9 @@ the floor.>
 1. A. Does what it claims:  PASS | PARTIAL | FAIL, <one line>
 2. B. Quality:             STRONG | OK | WEAK, <one line>
 3. C. Safety:              CLEAN | CONCERNS | UNSAFE, <one line>
+
+## Repo facts
+<plain statements, no severity, not counted in the verdict: age, stars, authors, signing, last commit, license, tests and CI present or not, how it installs, ready-made downloads, dependency ranges, outside hosts the job needs>
 
 ## Severity summary
 CRITICAL: N  HIGH: N  MEDIUM: N  LOW: N   (post-verification; note how many candidates were dropped)
