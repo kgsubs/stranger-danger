@@ -37,7 +37,7 @@ Severity (never inflate):
 - MEDIUM: edge-case defect, moderate supply-chain risk.
 - LOW: hygiene, minor doc drift.
 
-**Facts, not findings.** Some traits are how most public repos are, and say nothing by themselves. Report these in the report's "Repo facts" section, stated plainly, with no severity, never in Findings, and never counted toward the verdict:
+**Facts, not findings.** Some traits are how most public repos are, and say nothing by themselves. Report these in the report's "Repo facts" section, each stated plainly with a brief reason it is normal for this repo or not, with no severity, never in Findings, and never counted toward the verdict:
 - one author; unsigned commits or releases; few stars; a young repo
 - the install or the releases give a ready-made download (binary, package, image) that cannot be matched to the source
 - dependency versions given as ranges ("this version or newer"), the default in most package tools
@@ -131,7 +131,8 @@ the floor.>
 3. C. Safety:              CLEAN | CONCERNS | UNSAFE, <one line>
 
 ## Repo facts
-<plain statements, no severity, not counted in the verdict: age, stars, authors, signing, last commit, license, tests and CI present or not, how it installs, ready-made downloads, dependency ranges, outside hosts the job needs>
+<not counted in the verdict. One numbered line per fact: the fact, then a brief plain-words reason it is normal here or not. Cover age, stars, authors, signing, last commit, license, tests and CI present or not, how it installs, ready-made downloads, dependency ranges, outside hosts the job needs.>
+<e.g. "1. One author. Normal: most public repos have one." / "2. 4,000 stars in its first week. Not normal: stars rarely arrive that fast without promotion or buying.">
 
 ## Severity summary
 CRITICAL: N  HIGH: N  MEDIUM: N  LOW: N   (post-verification; note how many candidates were dropped)
